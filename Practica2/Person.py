@@ -2,45 +2,34 @@ from random import randrange
 import cv2
 
 class Person:
-    def __init__(self, x, y, w, h, frame):
+    def __init__(self, rectangle: tuple, frame):
         self.id = 0
         self.color = (randrange(255), randrange(255), randrange(255))
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
-        self.center = self.calculate_center(x, y, w, h)
+        self.rectangle = rectangle
         self.template = self.getRoi(frame)
+        self.state = True
 
-    def updateRectangle(self, x, y, w, h):
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
-        self.center = self.calculate_center(x, y, w, h)
+    def updateRectangle(self, newRectangle: tuple):
+        self.rectangle = newRectangle
 
     def topLeft(self):
-        return (self.x, self.y)
+        return (self.rectangle[0], self.rectangle[1])
 
     def bottonRight(self):
-        return (self.x + self.w, self.y + self.h)
+        x, y, w, h = self.rectangle
+        return (x + w, y + h)
 
-    def calculate_center(self, x, y, w, h):
+    def calculate_center(self):
+        x, y, w, h = self.rectangle
         return (x + w // 2, y + h // 2)
 
     def drawRectangle(self, frame):
         cv2.rectangle(frame, self.topLeft(), self.bottonRight(), self.color, 2)
-        cv2.putText(frame, f'Person {self.id}', (self.x, self.y - 5),
+        cv2.putText(frame, f'Person {self.id}', (self.rectangle[0], self.rectangle[1] - 5),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.3, self.color, 2)
 
-    def updateTemplate(self, frame):
-        self.template = self.getRoi(frame)
-
     def getRoi(self, frame):
-        y = self.y
-        x = self.x
-        h = self.h
-        w = self.w
+        x, y, w, h = self.rectangle
         return frame[y:y + h, x:x + w]
 
 
@@ -49,16 +38,18 @@ class Person:
         h, w, _ = self.template.shape[:]
         res = cv2.matchTemplate(frame, self.template, cv2.TM_CCOEFF_NORMED)
         # Get the best match position
-        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+        _, _, _, max_loc = cv2.minMaxLoc(res)
         # Get the top-left position
-        top_left = max_loc
+        x, y = max_loc
         # Get the bottom-right position
-        bottom_right = (top_left[0] + w, top_left[1] + h)
+        bottom_right = (x + w, y + h)
 
-        self.updateRectangle(top_left[0], top_left[1], w, h)
-        cv2.rectangle(frame, top_left, bottom_right, self.color, 2)
+        self.updateRectangle((x, y, w, h))
+        cv2.rectangle(frame, (x, y), bottom_right, self.color, 2)
         self.drawRectangle(frame)
-        cv2.circle(frame, top_left, 3, (0,0,255), 2)
+        cv2.circle(frame, (x, y), 3, (0, 0, 255), 2)
+
+
 
         #intentamos usar template matching de forma que solo analice una región donde estaba la persona en el anterior frame.
 
