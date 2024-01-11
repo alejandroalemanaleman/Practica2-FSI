@@ -8,6 +8,7 @@ class Person:
         self.rectangle = rectangle
         self.template = self.getRoi(frame)
         self.state = True
+        self.frame = frame
 
     def updateRectangle(self, newRectangle: tuple):
         self.rectangle = newRectangle
@@ -41,15 +42,11 @@ class Person:
         _, _, _, max_loc = cv2.minMaxLoc(res)
         # Get the top-left position
         x, y = max_loc
-        # Get the bottom-right position
-        bottom_right = (x + w, y + h)
 
+        self.frame = frame
         self.updateRectangle((x, y, w, h))
-        cv2.rectangle(frame, (x, y), bottom_right, self.color, 2)
         self.drawRectangle(frame)
         cv2.circle(frame, (x, y), 3, (0, 0, 255), 2)
-
-
 
         #intentamos usar template matching de forma que solo analice una región donde estaba la persona en el anterior frame.
 

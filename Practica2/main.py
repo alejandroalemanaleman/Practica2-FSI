@@ -41,8 +41,7 @@ while True:
     lista = [rect for rect in personsDetected if (rect[2] * rect[3]) < 5000] # Filtrar rectangulos muy grandes (detecciones incorrectas)
 
     for (x, y, w, h) in lista:
-        peopleDetectedActualFrame.append(Person((x, y, w, h), frame)) #CAMBIAR LISTAS
-
+        peopleDetectedActualFrame.append(Person((x, y, w, h), frame))
 
     for activePerson in allPeopleDetected:
         personStateEvaluator(activePerson)
@@ -56,10 +55,9 @@ while True:
             peopleDetectedActualFrame.remove(repeatedPerson)
         else:
             activePerson.find_matching(frame)
-            newPerson2 = personDetectorByDistance(peopleDetectedActualFrame, activePerson)
-            if newPerson2:
-                peopleDetectedActualFrame.remove(newPerson2)
-
+            repeatedPerson = personDetectorByDistance(peopleDetectedActualFrame, activePerson)
+            if repeatedPerson:
+                peopleDetectedActualFrame.remove(repeatedPerson)
 
     for person in peopleDetectedActualFrame:
         person.id = id
