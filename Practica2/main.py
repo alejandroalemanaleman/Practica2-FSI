@@ -35,7 +35,6 @@ while True:
     # Convertir la imagen a grises
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    # detectar personas en el frame con el template matching
     personsDetected = fullBodies.detectMultiScale(gray, scaleFactor=1.2, minNeighbors=4)
     peopleDetectedActualFrame = []
     lista = [rect for rect in personsDetected if (rect[2] * rect[3]) < 5000] # Filtrar rectangulos muy grandes (detecciones incorrectas)
@@ -48,7 +47,7 @@ while True:
         if not activePerson.state:
             allPeopleDetected.remove(activePerson)
             continue
-        repeatedPerson = personDetectorByDistance(peopleDetectedActualFrame, activePerson) #Primer control de si personas de frame actual ya estuvo en frame anterior (comprobar si hay personas nuevas)
+        repeatedPerson = personDetectorByDistance(peopleDetectedActualFrame, activePerson) # Primer control de si personas de frame actual ya estuvo en frame anterior (comprobar si hay personas nuevas)
         if repeatedPerson:
             activePerson.updateRectangle(repeatedPerson.rectangle)
             activePerson.drawRectangle(frame)

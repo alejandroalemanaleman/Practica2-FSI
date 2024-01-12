@@ -33,8 +33,6 @@ class Person:
         x, y, w, h = self.rectangle
         return frame[y:y + h, x:x + w]
 
-
-
     def find_matching(self, frame):
         h, w, _ = self.template.shape[:]
         res = cv2.matchTemplate(frame, self.template, cv2.TM_CCOEFF_NORMED)
